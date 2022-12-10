@@ -27,7 +27,7 @@ class BridgeTest extends TestCase
 
         $bridge->move('R', 1);
 
-        $this->assertEquals("TH\n", $bridge->occupantMap());
+        $this->assertEquals("1H\n", $bridge->occupantMap());
     }
 
     public function testMovesHeadPositionUp(): void
@@ -36,7 +36,7 @@ class BridgeTest extends TestCase
 
         $bridge->move('U', 1);
 
-        $this->assertEquals("H\nT\n", $bridge->occupantMap());
+        $this->assertEquals("H\n1\n", $bridge->occupantMap());
     }
 
     public function testMovesHeadPositionRightTwo(): void
@@ -45,7 +45,7 @@ class BridgeTest extends TestCase
 
         $bridge->move('R', 2);
 
-        $this->assertEquals("sTH\n", $bridge->occupantMap());
+        $this->assertEquals("21H\n", $bridge->occupantMap());
     }
 
     public function testMovesHeadPositionUpTwo(): void
@@ -54,7 +54,7 @@ class BridgeTest extends TestCase
 
         $bridge->move('U', 2);
 
-        $this->assertEquals("H\nT\ns\n", $bridge->occupantMap());
+        $this->assertEquals("H\n1\n2\n", $bridge->occupantMap());
     }
 
     public function testMovesHeadPositionLeft(): void
@@ -84,7 +84,7 @@ class BridgeTest extends TestCase
         $bridge->move('R', 3);
         $bridge->move('L', 2);
 
-        $this->assertEquals("sHT.\n", $bridge->occupantMap());
+        $this->assertEquals("3H1.\n", $bridge->occupantMap());
     }
 
     public function testMovesHeadPositionDownTwo(): void
@@ -94,30 +94,88 @@ class BridgeTest extends TestCase
         $bridge->move('U', 3);
         $bridge->move('D', 2);
 
-        $this->assertEquals(".\nT\nH\ns\n", $bridge->occupantMap());
+        $this->assertEquals(".\n1\nH\n3\n", $bridge->occupantMap());
     }
 
-    public function testRunsSeriesOfMoves(): void
+    public function testRunsSeriesOfMovesForOccupantMap(): void
     {
         $bridge = new Bridge();
 
-        $bridge->move('R', 4);
-        $bridge->move('U', 4);
-        $bridge->move('L', 3);
-        $bridge->move('D', 1);
-        $bridge->move('R', 4);
-        $bridge->move('D', 1);
-        $bridge->move('L', 5);
-        $bridge->move('R', 2);
+        $bridge->move('R', 5);
+        $bridge->move('U', 8);
+        $bridge->move('L', 8);
+        $bridge->move('D', 3);
+        $bridge->move('R', 17);
+        $bridge->move('D', 10);
+        $bridge->move('L', 25);
+        $bridge->move('U', 20);
 
         print $bridge->occupantMap();
-        $expected = "......\n" .
-                    "......\n" .
-                    ".TH...\n" .
-                    "......\n" .
-                    "s.....\n";
+        $expected =
+            "H.........................\n" .
+            "1.........................\n" .
+            "2.........................\n" .
+            "3.........................\n" .
+            "4.........................\n" .
+            "5.........................\n" .
+            "6.........................\n" .
+            "7.........................\n" .
+            "8.........................\n" .
+            "9.........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "...........s..............\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n";
 
         $this->assertEquals($expected, $bridge->occupantMap());
+    }
+
+    public function testRunsSeriesOfMovesForVisitedMap(): void
+    {
+        $bridge = new Bridge();
+
+        $bridge->move('R', 5);
+        $bridge->move('U', 8);
+        $bridge->move('L', 8);
+        $bridge->move('D', 3);
+        $bridge->move('R', 17);
+        $bridge->move('D', 10);
+        $bridge->move('L', 25);
+        $bridge->move('U', 20);
+
+        print $bridge->visitedMap();
+        $expected =
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "..........................\n" .
+            "#.........................\n" .
+            "#.............###.........\n" .
+            "#............#...#........\n" .
+            ".#..........#.....#.......\n" .
+            "..#..........#.....#......\n" .
+            "...#........#.......#.....\n" .
+            "....#......s.........#....\n" .
+            ".....#..............#.....\n" .
+            "......#............#......\n" .
+            ".......#..........#.......\n" .
+            "........#........#........\n" .
+            ".........########.........\n";
+
+        $this->assertEquals($expected, $bridge->visitedMap());
+        $this->assertEquals(36, $bridge->visitedCount());
     }
 
     public function testHandlesAddingRowsDown(): void
@@ -127,9 +185,9 @@ class BridgeTest extends TestCase
         $bridge->move('D', 3);
 
         print $bridge->occupantMap();
-        $expected = "s\n" .
-                    ".\n" .
-                    "T\n" .
+        $expected = "3\n" .
+                    "2\n" .
+                    "1\n" .
                     "H\n";
 
         $this->assertEquals($expected, $bridge->occupantMap());
@@ -142,7 +200,7 @@ class BridgeTest extends TestCase
         $bridge->move('L', 3);
 
         print $bridge->occupantMap();
-        $expected = "HT.s\n";
+        $expected = "H123\n";
 
         $this->assertEquals($expected, $bridge->occupantMap());
     }

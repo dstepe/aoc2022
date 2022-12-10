@@ -3,6 +3,7 @@
 namespace Tests\Unit\Aoc\Day09;
 
 use App\Aoc\Day09\Head;
+use App\Aoc\Day09\Knot;
 use App\Aoc\Day09\Position;
 use App\Aoc\Day09\Start;
 use App\Aoc\Day09\Tail;
@@ -19,9 +20,9 @@ class PositionTest extends TestCase
 
     public function testShowsCorrectOccupantMarkerForPositionWithStartOccupant(): void
     {
-        $position = Position::makePosition()->withOccupants(new Start());
+        $position = Position::makePosition()->withOccupants(Knot::start());
 
-        $this->assertEquals(Start::MARKER, $position->occupantMarker());
+        $this->assertEquals(Knot::START_MARKER, $position->occupantMarker());
     }
 
     public function testShowsCorrectVisitedMarkerForPositionWhenNotVisited(): void
@@ -33,53 +34,53 @@ class PositionTest extends TestCase
 
     public function testShowsCorrectVisitedMarkerForPositionWithStartOccupant(): void
     {
-        $position = Position::makePosition()->withOccupants(new Start());
+        $position = Position::makePosition()->withOccupants(Knot::start());
 
-        $this->assertEquals(Start::MARKER, $position->visitedMarker());
+        $this->assertEquals(Knot::START_MARKER, $position->visitedMarker());
     }
 
     public function testShowsCorrectVisitedMarkerForPositionWithHeadOccupant(): void
     {
-        $position = Position::makePosition()->withOccupants(new Head());
+        $position = Position::makePosition()->withOccupants(Knot::head());
 
         $this->assertEquals(Position::NOT_VISITED_MARKER, $position->visitedMarker());
     }
 
     public function testShowsCorrectVisitedMarkerForPositionWithTailOccupant(): void
     {
-        $position = Position::makePosition()->withOccupants(new Tail());
+        $position = Position::makePosition()->withOccupants(Knot::tail());
 
         $this->assertEquals(Position::VISITED_MARKER, $position->visitedMarker());
     }
 
     public function testShowsCorrectVisitedMarkerForPositionWithStartAndTailOccupant(): void
     {
-        $position = Position::makePosition()->withOccupants(new Start(), new Tail());
+        $position = Position::makePosition()->withOccupants(Knot::start(), Knot::tail());
 
-        $this->assertEquals(Start::MARKER, $position->visitedMarker());
+        $this->assertEquals(Knot::START_MARKER, $position->visitedMarker());
     }
 
     public function testShowsCorrectOccupantMarkerWhenOccoupantArrives(): void
     {
         $position = Position::makePosition();
 
-        $position->arrives(new Head());
+        $position->arrives(Knot::head());
 
-        $this->assertEquals(Head::MARKER, $position->occupantMarker());
+        $this->assertEquals(Knot::HEAD_MARKER, $position->occupantMarker());
     }
 
     public function testShowsCorrectVisitedMarkerWhenOccupantArrives(): void
     {
         $position = Position::makePosition();
 
-        $position->arrives(new Tail());
+        $position->arrives(Knot::tail());
 
         $this->assertEquals(Position::VISITED_MARKER, $position->visitedMarker());
     }
 
     public function testShowsCorrectOccupantMarkerWhenOccupantLeaves(): void
     {
-        $tail = new Tail();
+        $tail = Knot::tail();
 
         $position = Position::makePosition()->withOccupants($tail);
 

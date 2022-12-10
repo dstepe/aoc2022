@@ -43,7 +43,7 @@ class Position
         return $this;
     }
 
-    public function withOccupants(Occupant ...$occupants): self
+    public function withOccupants(Knot ...$occupants): self
     {
         foreach ($occupants as $occupant) {
             $this->arrives($occupant);
@@ -80,7 +80,7 @@ class Position
     public function visitedMarker(): string
     {
         if ($this->isStartPosition) {
-            return Start::MARKER;
+            return Knot::START_MARKER;
         }
 
         if ($this->visited) {
@@ -95,9 +95,9 @@ class Position
         return $this->isStartPosition || $this->visited;
     }
 
-    public function arrives(Occupant $occupant): void
+    public function arrives(Knot $occupant): void
     {
-        if ($occupant->marker() === Start::MARKER) {
+        if ($occupant->marker() === Knot::START_MARKER) {
             $this->isStartPosition = true;
         }
 
@@ -108,7 +108,7 @@ class Position
         $this->occupants->add($occupant);
     }
 
-    public function leaves(Occupant $occupant): void
+    public function leaves(Knot $occupant): void
     {
         $this->occupants->remove($occupant);
     }

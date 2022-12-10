@@ -10,25 +10,39 @@ class Bridge
 
     private ChangeCalculator $changeCalculator;
 
-    private Occupant $start;
-    private Occupant $head;
-    private Occupant $tail;
+    private Knot $start;
+    private Knot $head;
 
     private Position $headPosition;
-    private Position $tailPosition;
+
+    private Collection $knots;
 
     public function __construct()
     {
         $this->changeCalculator = new ChangeCalculator();
 
-        $this->start = new Start();
-        $this->head = new Head();
-        $this->tail = new Tail();
+        $this->start = Knot::start();
+        $this->head = Knot::head();
+
+        $this->knots = new KnotCollection();
+        $this->knots->addKnot($this->head);
+        $this->knots->addKnot(Knot::knot(1));
+        $this->knots->addKnot(Knot::knot(2));
+        $this->knots->addKnot(Knot::knot(3));
+        $this->knots->addKnot(Knot::knot(4));
+        $this->knots->addKnot(Knot::knot(5));
+        $this->knots->addKnot(Knot::knot(6));
+        $this->knots->addKnot(Knot::knot(7));
+        $this->knots->addKnot(Knot::knot(8));
+        $this->knots->addKnot(Knot::tail());
 
         $this->rows = new Collection();
 
-        $this->headPosition = Position::makePosition()->withOccupants($this->start, $this->head, $this->tail);
-        $this->tailPosition = $this->headPosition;
+        $this->headPosition = Position::makePosition()->withOccupants($this->start);
+
+        $this->knots->each(function (Knot $knot) {
+            $knot->enters($this->headPosition);
+        });
 
         $this->rows->add(new Row([$this->headPosition]));
     }
@@ -99,7 +113,7 @@ class Bridge
         $this->head->enters($nextPosition);
         $this->headPosition = $nextPosition;
 
-        $this->adjustTail();
+        $this->adjustFollowers();
     }
 
     private function ensureColumnLeft(): void
@@ -181,19 +195,31 @@ class Bridge
         return $targetRow->get($column);
     }
 
-    private function adjustTail(): void
+    private function adjustFollowers(): void
     {
-        $change = $this->changeCalculator->calculateChange($this->headPosition, $this->tailPosition);
+        $length = $this->knots->count();
+        for ($a = 0, $b = 1; $b < $length; $a++, $b++) {
+            /** @var Knot $aKnot */
+            $aKnot = $this->knots->get($a);
+            /** @var Knot $bKnot */
+            $bKnot = $this->knots->get($b);
 
-        if ($change->noChange()) {
-            return;
+            /** @var Position $aPosition */
+            $aPosition = $aKnot->position();
+            /** @var Position $bPosition */
+            $bPosition = $bKnot->position();
+
+            $change = $this->changeCalculator->calculateChange($aPosition, $bPosition);
+
+            if ($change->noChange()) {
+                continue;
+            }
+
+            $nextPosition = $this->getPosition($bPosition->row() + $change->rows(), $bPosition->column() + $change->columns());
+
+            $bKnot->leaves($bPosition);
+            $bKnot->enters($nextPosition);
         }
-
-        $nextPosition = $this->getPosition($this->tailPosition->row() + $change->rows(), $this->tailPosition->column() + $change->columns());
-
-        $this->tail->leaves($this->tailPosition);
-        $this->tail->enters($nextPosition);
-        $this->tailPosition = $nextPosition;
     }
 
     private function fillUnvisitedPositions(): void

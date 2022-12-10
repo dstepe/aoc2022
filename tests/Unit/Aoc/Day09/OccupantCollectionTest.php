@@ -3,6 +3,7 @@
 namespace Tests\Unit\Aoc\Day09;
 
 use App\Aoc\Day09\Head;
+use App\Aoc\Day09\Knot;
 use App\Aoc\Day09\OccupantCollection;
 use App\Aoc\Day09\Start;
 use App\Aoc\Day09\Tail;
@@ -24,18 +25,18 @@ class OccupantCollectionTest extends TestCase
     {
         return [
             'no occupants' => [[], OccupantCollection::EMPTY_MARKER],
-            'start' => [[new Start()], Start::MARKER],
-            'head' => [[new Head()], Head::MARKER],
-            'tail' => [[new Tail()], Tail::MARKER],
-            'all' => [[new Tail(), new Start(), new Head()], Start::MARKER],
-            'head, tail' => [[new Tail(), new Head()], Head::MARKER],
+            'start' => [[Knot::start()], Knot::START_MARKER],
+            'head' => [[Knot::head()], Knot::HEAD_MARKER],
+            'tail' => [[Knot::tail()], Knot::TAIL_MARKER],
+            'all' => [[Knot::tail(), Knot::start(), Knot::head()], Knot::HEAD_MARKER],
+            'head, tail' => [[Knot::tail(), Knot::head()], Knot::HEAD_MARKER],
         ];
     }
 
     public function testRemovesGivenOccupant(): void
     {
-        $tail = new Tail();
-        $collection = new OccupantCollection([new Start(), $tail]);
+        $tail = Knot::tail();
+        $collection = new OccupantCollection([Knot::start(), $tail]);
 
         $collection->remove($tail);
 
