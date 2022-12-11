@@ -38,6 +38,26 @@ class CathodeRayTubeTest extends TestCase
         $this->assertEquals(13140, $crt->signalStrength());
     }
 
+    public function testDisplaysResults(): void
+    {
+        $crt = new CathodeRayTube($this->signalsShort());
+
+        $crt->processSignals();
+
+        print $crt->display();
+        $this->assertEquals(420, $crt->signalStrength());
+    }
+
+    public function testDisplaysAllResults(): void
+    {
+        $crt = new CathodeRayTube($this->signals());
+
+        $crt->processSignals();
+
+        print $crt->display();
+//        $this->assertEquals(420, $crt->signalStrength());
+    }
+
     private function signalsShort(): \ArrayIterator
     {
         return new \ArrayIterator([

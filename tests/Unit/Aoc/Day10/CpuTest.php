@@ -16,18 +16,18 @@ class CpuTest extends TestCase
         $cpu = new Cpu($registry);
 
         $cpu->execute(new NoopInstruction());
-        $cpu->tick();
+        $cpu->tick(1);
         $this->assertEquals(1, $registry->value());
 
         $cpu->execute(new AddxInstruction(3));
-        $cpu->tick();
+        $cpu->tick(2);
         $this->assertEquals(1, $registry->value());
 
         $cpu->execute(new AddxInstruction(-1));
-        $cpu->tick();
+        $cpu->tick(3);
         $this->assertEquals(4, $registry->value());
 
-        $cpu->tick();
+        $cpu->tick(4);
         $this->assertEquals(3, $registry->value());
     }
 }

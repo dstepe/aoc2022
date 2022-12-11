@@ -4,7 +4,7 @@ namespace App\Aoc\Day10;
 
 use Illuminate\Support\Collection;
 
-class Cpu
+class Cpu implements ClockListener
 {
     private Register $register;
 
@@ -33,7 +33,7 @@ class Cpu
         $this->stack->add($instruction);
     }
 
-    public function tick(): void
+    public function tick(int $cycle): void
     {
         $this->ticks++;
 

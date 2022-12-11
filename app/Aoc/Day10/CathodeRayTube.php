@@ -8,7 +8,9 @@ class CathodeRayTube
 
     private Register $register;
 
+    private Clock $clock;
     private Cpu $cpu;
+    private Display $display;
 
     private SignalProcessor $signalProcessor;
 
@@ -18,9 +20,19 @@ class CathodeRayTube
     {
         $this->input = $input;
 
+        $this->clock = new Clock();
+
         $this->register = new Register();
+
+        $this->display = new Display($this->register);
+
+        $this->clock->addListener($this->display);
+
         $this->cpu = new Cpu($this->register);
+
         $this->signalProcessor = new SignalProcessor($this->cpu);
+
+        $this->clock->addListener($this->cpu);
     }
 
     public function processSignals(): void
@@ -31,11 +43,11 @@ class CathodeRayTube
 
         foreach ($this->input as $signal) {
             $this->signalProcessor->process($signal);
-            $this->cpu->tick();
+            $this->clock->tick();
         }
 
         while ($this->cpu->hasPendingInstructions()) {
-            $this->cpu->tick();
+            $this->clock->tick();
         }
     }
 
@@ -47,6 +59,11 @@ class CathodeRayTube
     public function signalStrength(): int
     {
         return $this->signalStrength;
+    }
+
+    public function display(): string
+    {
+        return $this->display->display();
     }
 
     private function sampleSignal(Cpu $cpu): void

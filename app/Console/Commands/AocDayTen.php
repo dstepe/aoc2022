@@ -34,6 +34,8 @@ class AocDayTen extends AocDay
 
         $crt->processSignals();
 
+        print $crt->display();
+
         $this->output->info(sprintf('Signal strength: %s', $crt->signalStrength()));
 
         return Command::SUCCESS;
