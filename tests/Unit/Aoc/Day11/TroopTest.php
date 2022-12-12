@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Aoc\Day11;
 
+use App\Aoc\Day11\Operation;
 use App\Aoc\Day11\Troop;
 use PHPUnit\Framework\TestCase;
 
@@ -55,8 +56,28 @@ class TroopTest extends TestCase
         $this->assertEquals($expected, $troop->list());
     }
 
-    public function testShowsMonkeyInspectedCounts():void
+    public function testShowsMonkeyInspectedCountsAfterOneRound():void
     {
+        Operation::reliefFactor(1);
+
+        $troop = $this->makeTroop();
+
+        $troop->executeRound();
+
+        print $troop->inspectCounts();
+
+        $expected = "Monkey 0 inspected items 2 times.\n" .
+            "Monkey 1 inspected items 4 times.\n" .
+            "Monkey 2 inspected items 3 times.\n" .
+            "Monkey 3 inspected items 6 times.\n";
+
+        $this->assertEquals($expected, $troop->inspectCounts());
+    }
+
+    public function testShowsMonkeyInspectedCountsAfterMultipleRounds():void
+    {
+        Operation::reliefFactor(1);
+
         $troop = $this->makeTroop();
 
         for ($i = 0; $i < 20; $i++) {
@@ -65,10 +86,10 @@ class TroopTest extends TestCase
 
         print $troop->inspectCounts();
 
-        $expected = "Monkey 0 inspected items 101 times.\n" .
-            "Monkey 1 inspected items 95 times.\n" .
-            "Monkey 2 inspected items 7 times.\n" .
-            "Monkey 3 inspected items 105 times.\n";
+        $expected = "Monkey 0 inspected items 99 times.\n" .
+            "Monkey 1 inspected items 97 times.\n" .
+            "Monkey 2 inspected items 8 times.\n" .
+            "Monkey 3 inspected items 103 times.\n";
 
         $this->assertEquals($expected, $troop->inspectCounts());
     }

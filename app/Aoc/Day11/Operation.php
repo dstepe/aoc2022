@@ -4,6 +4,8 @@ namespace App\Aoc\Day11;
 
 class Operation
 {
+    private static int $reliefFactor = 3;
+
     private string $spec;
 
     private function __construct(string $spec)
@@ -18,6 +20,11 @@ class Operation
         return new self(str_replace('new = ', '', $spec));
     }
 
+    public static function reliefFactor(int $reliefFactor): void
+    {
+        self::$reliefFactor = $reliefFactor;
+    }
+
     public function spec(): string
     {
         return $this->spec;
@@ -25,18 +32,24 @@ class Operation
 
     public function evaluate(Item $item): int
     {
-        $level = eval($this->makeExpression($item->worryLevel()));
+        $expression = $this->makeExpression($item->worryLevel());
+
+        $level = match ($expression[1]) {
+            '*' => $expression[0] * $expression[2],
+            '+' => $expression[0] + $expression[2],
+            default => throw new \InvalidArgumentException(sprintf('Unsupported expressions: %s', $expression[1])),
+        };
 
         return $this->applyRelief($level);
     }
 
-    private function makeExpression(int $level): string
+    private function makeExpression(int $level): array
     {
-        return 'return ' . str_replace('old', $level, $this->spec) . ';';
+        return explode(' ', str_replace('old', $level, $this->spec));
     }
 
     private function applyRelief(float $level): int
     {
-        return (int) floor($level / 3);
+        return (int) floor($level / self::$reliefFactor);
     }
 }

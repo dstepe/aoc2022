@@ -35,7 +35,7 @@ class AocDayEleven extends AocDay
 
         $monkeyBusiness->observeMonkeys();
 
-        $monkeyBusiness->playRounds(20);
+        $monkeyBusiness->playRounds(10000);
 
         $this->output->info(sprintf('Monkey business: %s', $monkeyBusiness->monkeyBusinessLevel()));
 
