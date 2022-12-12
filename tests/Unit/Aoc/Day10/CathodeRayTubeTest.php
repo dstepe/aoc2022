@@ -44,8 +44,13 @@ class CathodeRayTubeTest extends TestCase
 
         $crt->processSignals();
 
-        print $crt->display();
-        $this->assertEquals(420, $crt->signalStrength());
+        $expected = "##..##..##..##..##..#...................\n" .
+            "........................................\n" .
+            "........................................\n" .
+            "........................................\n" .
+            "........................................\n" .
+            "........................................\n";
+        $this->assertEquals($expected, $crt->display());
     }
 
     public function testDisplaysAllResults(): void
@@ -54,8 +59,13 @@ class CathodeRayTubeTest extends TestCase
 
         $crt->processSignals();
 
-        print $crt->display();
-//        $this->assertEquals(420, $crt->signalStrength());
+        $expected = "##..##..##..##..##..##..##..##..##..##..\n" .
+            "###...###...###...###...###...###...###.\n" .
+            "####....####....####....####....####....\n" .
+            "#####.....#####.....#####.....#####.....\n" .
+            "######......######......######......####\n" .
+            "#######.......#######.......#######.....\n";
+        $this->assertEquals($expected, $crt->display());
     }
 
     private function signalsShort(): \ArrayIterator
