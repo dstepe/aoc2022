@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Aoc\Day12\HillClimb;
 use Illuminate\Console\Command;
 
 class AocDayTwelve extends AocDay
@@ -29,7 +30,11 @@ class AocDayTwelve extends AocDay
      */
     public function handle()
     {
-//        $this->output->info(sprintf('Monkey business: %s', $monkeyBusiness->monkeyBusinessLevel()));
+        $hillClimb = new HillClimb($this->getDayInputFile());
+
+        $hillClimb->seekRoutes();
+
+        $this->output->info(sprintf('Shortest route: %s', $hillClimb->shortestRoute()));
 
         return Command::SUCCESS;
     }

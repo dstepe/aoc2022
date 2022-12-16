@@ -13,9 +13,9 @@ class SeekerTest extends TestCase
         $map = $this->makeMap();
         $seeker = new Seeker($map);
 
-        $seeker->seekEnd();
+        $seeker->seekRoutes();
 
-        print $map->route();
+//        print $map->route();
     }
 
     private function makeMap(): Map

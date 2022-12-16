@@ -103,10 +103,10 @@ class PositionTest extends TestCase
         $left = new Position('c', $pRow, $pCol - 1);
 
         $position->endPosition($end);
-        $position->upNeighbor($up);
-        $position->rightNeighbor($right);
-        $position->downNeighbor($down);
-        $position->leftNeighbor($left);
+        $position->addUpNeighbor($up);
+        $position->addRightNeighbor($right);
+        $position->addDownNeighbor($down);
+        $position->addLeftNeighbor($left);
 
         $next = $position->findNextPosition();
         print $next->location() . "\n";

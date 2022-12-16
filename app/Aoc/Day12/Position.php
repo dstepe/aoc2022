@@ -66,24 +66,44 @@ class Position
         return sprintf('%s:%s', $this->row, $this->column);
     }
 
-    public function upNeighbor(Position $position): void
+    public function addUpNeighbor(Position $position): void
     {
         $this->upNeighbor = $position;
     }
 
-    public function rightNeighbor(Position $position): void
+    public function upNeighbor(): Position
+    {
+        return $this->upNeighbor;
+    }
+
+    public function addRightNeighbor(Position $position): void
     {
         $this->rightNeighbor = $position;
     }
 
-    public function downNeighbor(Position $position): void
+    public function rightNeighbor(): Position
+    {
+        return $this->rightNeighbor;
+    }
+
+    public function addDownNeighbor(Position $position): void
     {
         $this->downNeighbor = $position;
     }
 
-    public function leftNeighbor(Position $position): void
+    public function downNeighbor(): Position
+    {
+        return $this->downNeighbor;
+    }
+
+    public function addLeftNeighbor(Position $position): void
     {
         $this->leftNeighbor = $position;
+    }
+
+    public function leftNeighbor(): Position
+    {
+        return $this->leftNeighbor;
     }
 
     public function endPosition(Position $end): void
@@ -99,58 +119,6 @@ class Position
     public function isNot(Position $position): bool
     {
         return !$this->is($position);
-    }
-
-    public function findNextPosition(): Position
-    {
-        $candidates = [];
-
-        // Prefer vertical moves so put them first
-        if ($this->canMoveUp()) {
-            $candidates[] = [
-                'direction' => 'up',
-                'position' => $this->upNeighbor,
-                'score' => $this->moveScore($this->upNeighbor),
-            ];
-        }
-
-        if ($this->canMoveDown()) {
-            $candidates[] = [
-                'direction' => 'down',
-                'position' => $this->downNeighbor,
-                'score' => $this->moveScore($this->downNeighbor),
-            ];
-        }
-
-        if ($this->canMoveRight()) {
-            $candidates[] = [
-                'direction' => 'right',
-                'position' => $this->rightNeighbor,
-                'score' => $this->moveScore($this->rightNeighbor),
-            ];
-        }
-
-        if ($this->canMoveLeft()) {
-            $candidates[] = [
-                'direction' => 'left',
-                'position' => $this->leftNeighbor,
-                'score' => $this->moveScore($this->leftNeighbor),
-            ];
-        }
-
-        if (empty($candidates)) {
-            throw new \InvalidArgumentException('Now neighbors are a candidate to move to from: %s', $this->location());
-        }
-
-        $selected = array_reduce($candidates, function (array $moveTo, array $candidate) {
-            if (empty($moveTo) || $candidate['score'] < $moveTo['score']) {
-                $moveTo = $candidate;
-            }
-
-            return $moveTo;
-        }, []);
-
-        return $selected['position'];
     }
 
     public function canMoveUp(): bool
@@ -192,22 +160,6 @@ class Position
     private function canMoveTo(Position $position): bool
     {
         return abs($position->height() - $this->height) <= 1;
-    }
-
-    public function moveScore(Position $position): int
-    {
-        // ensure Position is a neighbor
-        if (abs($this->row - $position->row()) > 1 || abs($this->column - $position->column()) > 1) {
-            throw new \InvalidArgumentException(sprintf('%s is not a neighor of %s', $this->location(), $position->location()));
-        }
-
-        $verticalDistanceToEnd = abs($position->row - $this->end->row());
-        $horizontalDistanceToEnd = abs($position->column - $this->end->column());
-        $elevationDifference = $position->height() - $this->height;
-
-        printf("Current: %s, neighbor: %s, end: %s\n", $this->location(), $position->location(), $this->end->location());
-        printf("VDist: %s, HDist: %s, EDiff: %s\n", $verticalDistanceToEnd, $horizontalDistanceToEnd, $elevationDifference);
-        return $verticalDistanceToEnd + $horizontalDistanceToEnd;
     }
 
     public function leaveFor(Position $position): void

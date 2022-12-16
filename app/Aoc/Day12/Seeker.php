@@ -2,42 +2,88 @@
 
 namespace App\Aoc\Day12;
 
+use Illuminate\Support\Collection;
+
 class Seeker
 {
     private Map $map;
-    private Position $position;
+    private Position $start;
     private Position $end;
-    private int $moveLimit;
+
+    private Collection $routes;
+
+    private Collection $possibleRoutes;
+    private int $shortestRoute;
 
     public function __construct(Map $map)
     {
         $this->map = $map;
 
-        $this->initialize();
+        $this->start = $this->map->start();
+        $this->end = $this->map->end();
+
+        $this->routes = new Collection();
     }
 
-    public function seekEnd(): void
+    public function seekRoutes(): void
     {
-        $attempt = 0;
+        $this->routesFrom($this->start);
 
-        while ($this->position->isNot($this->end) && $attempt < $this->moveLimit) {
-            $next = $this->position->findNextPosition();
-            $this->position->leaveFor($next);
-            $this->position = $next;
-            $attempt++;
-        }
+        $this->possibleRoutes = $this->routes->filter(function (Collection $path) {
+            return $path->last() === $this->end->location();
+        });
+
+        $this->shortestRoute = $this->possibleRoutes->reduce(function (int $c, Collection $path) {
+            return min($c, $path->count());
+        }, $this->map->size()) - 1;
     }
 
-    private function initialize(): void
+    public function shortestRoute(): int
     {
-        if (empty($this->position)) {
-            $this->position = $this->map->start();
+        return $this->shortestRoute;
+    }
+    
+    private function routesFrom(Position $position, Collection $path = null): Collection
+    {
+        if ($path === null) {
+            $path = new Collection();
         }
 
-        if (empty($this->end)) {
-            $this->end = $this->map->end();
+        $options = $this->getMoveOptionsFor($position);
+
+        $path = $path->merge([$position->location()]);
+
+        $options->each(function (Position $neighbor) use ($path) {
+            if ($path->contains($neighbor->location())) {
+                return;
+            }
+
+            $this->routes->add($this->routesFrom($neighbor, $path));
+        });
+
+        return $path;
+    }
+
+    private function getMoveOptionsFor(Position $position): Collection
+    {
+        $options = new Collection();
+
+        if ($position->canMoveUp()) {
+            $options->add($position->upNeighbor());
         }
 
-        $this->moveLimit = $this->map->size();
+        if ($position->canMoveRight()) {
+            $options->add($position->rightNeighbor());
+        }
+
+        if ($position->canMoveDown()) {
+            $options->add($position->downNeighbor());
+        }
+
+        if ($position->canMoveLeft()) {
+            $options->add($position->leftNeighbor());
+        }
+
+        return $options;
     }
 }

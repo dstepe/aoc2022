@@ -30,15 +30,15 @@ class Map
             if ($row->count() > 0) {
                 /** @var Position $leftNeighbor */
                 $leftNeighbor = $row->last();
-                $position->leftNeighbor($leftNeighbor);
-                $leftNeighbor->rightNeighbor($position);
+                $position->addLeftNeighbor($leftNeighbor);
+                $leftNeighbor->addRightNeighbor($position);
             }
 
             if (null !== $previousRow) {
                 /** @var Position $upNeighbor */
                 $upNeighbor = $previousRow->get($row->count());
-                $position->upNeighbor($upNeighbor);
-                $upNeighbor->downNeighbor($position);
+                $position->addUpNeighbor($upNeighbor);
+                $upNeighbor->addDownNeighbor($position);
             }
 
             $row->add($position);
