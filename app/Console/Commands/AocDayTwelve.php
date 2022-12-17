@@ -34,7 +34,7 @@ class AocDayTwelve extends AocDay
 
         $hillClimb->seekRoutes();
 
-        $this->output->info(sprintf('Shortest route: %s', $hillClimb->shortestRoute()));
+        $this->output->info(sprintf('Shortest route: %s', $hillClimb->shortestDistance()));
 
         return Command::SUCCESS;
     }

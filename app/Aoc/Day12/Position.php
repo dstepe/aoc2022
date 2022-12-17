@@ -121,6 +121,11 @@ class Position
         return !$this->is($position);
     }
 
+    public function isEnd(): bool
+    {
+        return $this->is($this->end);
+    }
+
     public function canMoveUp(): bool
     {
         if (empty($this->upNeighbor)) {
@@ -159,7 +164,7 @@ class Position
 
     private function canMoveTo(Position $position): bool
     {
-        return abs($position->height() - $this->height) <= 1;
+        return $position->height() <= $this->height + 1;
     }
 
     public function leaveFor(Position $position): void
@@ -185,6 +190,11 @@ class Position
         }
 
         throw new \InvalidArgumentException('Tried to leave for position that is not a neighbor');
+    }
+
+    public function __toString(): string
+    {
+        return $this->location();
     }
 
     private function setHeight(): void

@@ -21,12 +21,19 @@ class HillClimb
             $this->map->makeRow($line);
         }
 
+        printf("Seeking from %s to %s on map size %s\n", $this->map->start(), $this->map->end(), $this->map->size());
         $this->seeker = new Seeker($this->map);
-        $this->seeker->seekRoutes();
+        try {
+            $this->seeker->seekRoutes();
+        } catch (\Exception $e) {
+            print "Could not find end on map\n";
+        }
+
+        print $this->map->route();
     }
 
-    public function shortestRoute(): int
+    public function shortestDistance(): int
     {
-        return $this->seeker->shortestRoute();
+        return $this->seeker->shortestRoute()->count();
     }
 }

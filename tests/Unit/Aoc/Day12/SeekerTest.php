@@ -15,7 +15,8 @@ class SeekerTest extends TestCase
 
         $seeker->seekRoutes();
 
-//        print $map->route();
+        print "steps: " . $seeker->shortestRoute()->count() . "\n";
+        print $map->route();
     }
 
     private function makeMap(): Map
