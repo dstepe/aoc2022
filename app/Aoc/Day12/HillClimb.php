@@ -2,15 +2,20 @@
 
 namespace App\Aoc\Day12;
 
+use Illuminate\Console\OutputStyle;
+
 class HillClimb
 {
     private \Iterator $input;
+    private OutputStyle $output;
+
     private Map $map;
     private Seeker $seeker;
 
-    public function __construct(\Iterator $input)
+    public function __construct(\Iterator $input, OutputStyle $output)
     {
         $this->input = $input;
+        $this->output = $output;
     }
 
     public function seekRoutes(): void
@@ -21,12 +26,12 @@ class HillClimb
             $this->map->makeRow($line);
         }
 
-        printf("Seeking from %s to %s on map size %s\n", $this->map->start(), $this->map->end(), $this->map->size());
-        $this->seeker = new Seeker($this->map);
+        $this->seeker = new Seeker($this->map, $this->output);
         try {
-            $this->seeker->seekRoutes();
+            $this->seeker->seekRoutes('a');
         } catch (\Exception $e) {
             print "Could not find end on map\n";
+            exit(1);
         }
 
         print $this->map->route();

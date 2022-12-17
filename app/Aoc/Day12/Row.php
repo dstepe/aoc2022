@@ -19,4 +19,14 @@ class Row extends Collection
             return $c . $position->marker();
         }, '');
     }
+
+    public function findAll(string $label): Collection
+    {
+        return $this->reduce(function (Collection $c, Position $position) use ($label) {
+            if ($position->label() === $label) {
+                $c->add($position);
+            }
+            return $c;
+        }, new Collection());
+    }
 }

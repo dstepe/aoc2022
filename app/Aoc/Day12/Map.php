@@ -89,6 +89,13 @@ class Map
         }, 0);
     }
 
+    public function findAll(string $label): Collection
+    {
+        return $this->rows->reduce(function (Collection $c, Row $row) use ($label) {
+            return $c->merge($row->findAll($label));
+        }, new Collection());
+    }
+
     private function setEnd(): void
     {
         $this->rows->each(function (Row $row) {

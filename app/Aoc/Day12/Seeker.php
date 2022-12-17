@@ -2,19 +2,23 @@
 
 namespace App\Aoc\Day12;
 
+use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
 
 class Seeker
 {
     private Map $map;
+    private OutputStyle $output;
+
     private Position $start;
     private Position $end;
 
     private Collection $shortestRoute;
 
-    public function __construct(Map $map)
+    public function __construct(Map $map, OutputStyle $output)
     {
         $this->map = $map;
+        $this->output = $output;
 
         $this->start = $this->map->start();
         $this->end = $this->map->end();
@@ -22,10 +26,37 @@ class Seeker
         $this->routes = new Collection();
     }
 
-    public function seekRoutes(): void
+    public function seekRoutes(string $label): void
     {
-        $start = $this->start;
+        $startingPoints = $this->map->findAll($label);
 
+        $progress = $this->output->createProgressBar($startingPoints->count());
+        $progress->start();
+
+        $this->shortestRoute = $startingPoints->reduce(function (?Collection $c, Position $start) use ($progress) {
+            try {
+                $route = $this->seekRouteFrom($start);
+                if ($c === null) {
+                    $c = $route;
+                }
+
+                $c = $route->count() < $c->count() ? $route : $c;
+            } catch (\Exception $e) {
+
+            }
+
+            $progress->advance();
+
+            return $c;
+        });
+
+        $progress->finish();
+
+        $this->mapVisited($this->shortestRoute);
+    }
+
+    public function seekRouteFrom(Position $start): Collection
+    {
         $frontier = new Frontier();
         $frontier->enqueue($start, 0);
 
@@ -39,8 +70,7 @@ class Seeker
             $current = $frontier->dequeue();
 
             if ($current->isEnd()) {
-                $this->createPathFrom($cameFrom);
-                return;
+                return $this->makeRouteFrom($start, $cameFrom);
             }
 
             $currentCost = $costSoFar->get($current->location());
@@ -57,8 +87,6 @@ class Seeker
                 }
             }
         }
-
-        $this->createPathFrom($cameFrom);
 
         throw new \Exception('Unable to find path to end');
     }
@@ -97,22 +125,38 @@ class Seeker
         return $options;
     }
 
-    private function createPathFrom(Collection $cameFrom): void
+    private function makeRouteFrom(Position $start, Collection $cameFrom): Collection
     {
         $route = new Collection();
 
         $position = $cameFrom->last();
 
-        while ($position->isNot($this->start)) {
+        while ($position->isNot($start)) {
             /** @var Position $from */
             $from = $cameFrom->get($position->location());
             $route->add($from);
 
-            $from->leaveFor($position);
-
             $position = $from;
         }
 
-        $this->shortestRoute = $route->reverse();
+        return $route->reverse();
+    }
+
+    private function mapVisited(Collection $path): void
+    {
+        $length = $path->count();
+        for ($i = 0; $i < $length; $i++) {
+            /** @var Position $position */
+            $position = $path->get($i);
+
+            /** @var Position $neighbor */
+            $neighbor = $path->get($i + 1);
+
+            if ($neighbor === null) {
+                continue;
+            }
+            
+            $neighbor->leaveFor($position);
+        }
     }
 }

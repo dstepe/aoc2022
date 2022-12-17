@@ -30,7 +30,7 @@ class AocDayTwelve extends AocDay
      */
     public function handle()
     {
-        $hillClimb = new HillClimb($this->getDayInputFile());
+        $hillClimb = new HillClimb($this->getDayInputFile(), $this->output);
 
         $hillClimb->seekRoutes();
 
