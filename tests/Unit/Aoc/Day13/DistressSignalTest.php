@@ -13,7 +13,7 @@ class DistressSignalTest extends TestCase
 
         $processor->processSignals();
 
-        $this->assertEquals(13, $processor->correctPacketIndicator());
+        $this->assertEquals(140, $processor->decoderKey());
     }
 
     private function sampleSignals(): \ArrayIterator

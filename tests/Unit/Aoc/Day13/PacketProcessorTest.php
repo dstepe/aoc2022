@@ -20,8 +20,8 @@ class PacketProcessorTest extends TestCase
 
         $processor = new PacketProcessor($listener);
 
-        $processor->process(Packet::fromLine($left));
-        $processor->process(Packet::fromLine($right));
+        $processor->addPacket(Packet::fromLine($left));
+        $processor->addPacket(Packet::fromLine($right));
     }
 
     public function processesPacketsChecks(): array
@@ -41,13 +41,13 @@ class PacketProcessorTest extends TestCase
 
         $processor = new PacketProcessor($listener);
 
-        $processor->process(Packet::fromLine('[1,1,3,1,1]'));
-        $processor->process(Packet::fromLine('[1,1,5,1,1]'));
-        $processor->process(Packet::fromLine(''));
-        $processor->process(Packet::fromLine('[[1],[2,3,4]]'));
-        $processor->process(Packet::fromLine('[[1],4]'));
-        $processor->process(Packet::fromLine(''));
-        $processor->process(Packet::fromLine('[7,7,7,7]'));
-        $processor->process(Packet::fromLine('[7,7,7]'));
+        $processor->addPacket(Packet::fromLine('[1,1,3,1,1]'));
+        $processor->addPacket(Packet::fromLine('[1,1,5,1,1]'));
+        $processor->addPacket(Packet::fromLine(''));
+        $processor->addPacket(Packet::fromLine('[[1],[2,3,4]]'));
+        $processor->addPacket(Packet::fromLine('[[1],4]'));
+        $processor->addPacket(Packet::fromLine(''));
+        $processor->addPacket(Packet::fromLine('[7,7,7,7]'));
+        $processor->addPacket(Packet::fromLine('[7,7,7]'));
     }
 }

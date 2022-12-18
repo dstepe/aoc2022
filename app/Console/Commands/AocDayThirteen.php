@@ -34,7 +34,7 @@ class AocDayThirteen extends AocDay
 
         $processor->processSignals();
 
-        $this->output->info(sprintf('Correct packet indicator: %s', $processor->correctPacketIndicator()));
+        $this->output->info(sprintf('Decoder key: %s', $processor->decoderKey()));
 
         return Command::SUCCESS;
     }

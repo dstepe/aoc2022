@@ -19,15 +19,6 @@ class Packet
 
         $data = eval(sprintf('return %s;', $line));
 
-        $values = array_reduce($data, function (array $c, $value) {
-            if (is_array($value)) {
-                $c[] = new ValueArray($value);
-            } else {
-                $c[] = new ValueInteger($value);
-            }
-
-            return $c;
-        }, []);
         return new self($data);
     }
 
@@ -48,6 +39,11 @@ class Packet
         }
 
         return $this->values[$index];
+    }
+
+    public function __toString(): string
+    {
+        return serialize($this->values);
     }
 
     public function isNull(): bool

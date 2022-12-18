@@ -6,25 +6,25 @@ class DistressSignal
 {
     private \Iterator $input;
     private PacketProcessor $processor;
-    private PacketListener $listener;
 
     public function __construct(\Iterator $input)
     {
         $this->input = $input;
 
-        $this->listener = new PacketListener();
-        $this->processor = new PacketProcessor($this->listener);
+        $this->processor = new PacketProcessor();
     }
 
     public function processSignals(): void
     {
         foreach ($this->input as $line) {
-            $this->processor->process(Packet::fromLine($line));
+            $this->processor->addPacket(Packet::fromLine($line));
         }
+
+        $this->processor->orderPackets();
     }
 
-    public function correctPacketIndicator(): int
+    public function decoderKey(): int
     {
-        return array_sum($this->listener->rightIndices());
+        return $this->processor->decoderKey();
     }
 }
