@@ -155,7 +155,7 @@ class Seeker
             if ($neighbor === null) {
                 continue;
             }
-            
+
             $neighbor->leaveFor($position);
         }
     }
