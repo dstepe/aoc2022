@@ -26,10 +26,17 @@ class Cave
             } catch (FellToAbyssException $e) {
                 $this->isFull = true;
                 return;
+            } catch (PluggedHoleException $e) {
+                $this->droppedSand++; // count last sand in this case
+                $this->isFull = true;
+                return;
             }
         }
 
         $this->droppedSand++;
+//        if ($this->droppedSand >= 10000) {
+//            $this->isFull = true;
+//        }
     }
 
     public function isFull(): bool

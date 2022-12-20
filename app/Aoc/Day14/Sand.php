@@ -24,7 +24,7 @@ class Sand
 
     /**
      * @return void
-     * @throws FellToAbyssException
+     * @throws FellToAbyssException|PluggedHoleException
      */
     public function fall(): void
     {
@@ -34,6 +34,11 @@ class Sand
             $this->falling = false;
             $last = $this->caveMap->findPoint($this->current);
             $last->makeSand();
+
+            if ($last->coordinates()->pair() === $this->caveMap->sandSource()->pair()) {
+                throw new PluggedHoleException();
+            }
+
             return;
         }
 

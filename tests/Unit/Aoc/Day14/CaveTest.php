@@ -35,6 +35,6 @@ class CaveTest extends TestCase
 
         print $cave->map();
 
-        $this->assertEquals(24, $cave->droppedSand());
+        $this->assertEquals(93, $cave->droppedSand());
     }
 }

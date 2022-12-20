@@ -36,7 +36,7 @@ class AocDayFourteen extends AocDay
 
         $monitor->dropSand();
 
-        print $monitor->map();
+//        print $monitor->map();
         
         $this->output->info(sprintf('Sand capacity: %s', $monitor->capacity()));
 
