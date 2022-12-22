@@ -27,4 +27,9 @@ class Point
     {
         return sprintf('%s,%s', $this->x, $this->y);
     }
+
+    public function tuningFrequency(): int
+    {
+        return ($this->x * 4000000) + $this->y;
+    }
 }

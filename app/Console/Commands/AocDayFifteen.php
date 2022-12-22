@@ -36,6 +36,10 @@ class AocDayFifteen extends AocDay
         $analyzer->analyzeRow(2000000);
 
         $this->output->info(sprintf('Excluded positions: %s', $analyzer->exclusions()));
+        $this->output->info(sprintf(
+            'Undetected beacon tuning frequencey: %s',
+            $analyzer->undetectedBeaconTuningFrequency(4000000, 2177081))
+        );
 
         return Command::SUCCESS;
     }

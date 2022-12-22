@@ -36,6 +36,14 @@ class SensorRow
         $range = $sensor->positionsSeenInRow($this->rowNum);
         $this->ranges->add($range);
         $this->mergeRange($range);
+
+        $this->mergedRanges = $this->mergedRanges->sort(function (Range $a, Range $b) {
+            if ($a->fromX() === $b->fromX()) {
+                return 0;
+            }
+
+            return $a->fromX() < $b->fromX() ? -1 : 1;
+        });
     }
 
     public function excluded(): int
@@ -53,6 +61,27 @@ class SensorRow
     public function mergedRanges(): Collection
     {
         return $this->mergedRanges;
+    }
+
+    public function uncoveredInRange(int $start, int $end): Collection
+    {
+        $uncovered = new Collection();
+
+        if ($this->mergedRanges->count() === 1) {
+            return $uncovered;
+        }
+
+        // slide over ranges finding gaps between to x and from x
+        $this->mergedRanges->sliding(2)->eachSpread(function (Range $a, Range $b) use ($uncovered) {
+            $from = $a->toX() + 1;
+            $to = $b->fromX();
+
+            for ($i = $from; $i < $to; $i++) {
+                $uncovered->add(new Point($i, $this->rowNum));
+            }
+        });
+
+        return $uncovered;
     }
 
     private function startCandidate(int $candidate): void
@@ -97,11 +126,11 @@ class SensorRow
             return;
         }
 
-        if ($overlappedRanges->count() === 2) {
+        if ($overlappedRanges->count() > 1) {
             /** @var Range $overlappedRange1 */
-            $overlappedRange1 = $overlappedRanges->get(0);
+            $overlappedRange1 = $overlappedRanges->first();
             /** @var Range $overlappedRange2 */
-            $overlappedRange2 = $overlappedRanges->get(1);
+            $overlappedRange2 = $overlappedRanges->last();
             $from = min($range->fromX(), $overlappedRange1->fromX(), $overlappedRange2->fromX());
             $to = max($range->toX(), $overlappedRange1->toX(), $overlappedRange2->toX());
 
@@ -149,6 +178,14 @@ class SensorRow
             return;
         }
 
-        throw new \Exception('Unexpected condition with ranges');
+        printf("Range %s\n\n", $range->label());
+        $this->mergedRanges->each(function (Range $range) {
+            printf("Merged range %s\n", $range->label());
+        });
+        print "\n";
+        $overlappedRanges->each(function (Range $range) {
+            printf("Overlapped range %s\n", $range->label());
+        });
+        throw new \Exception(sprintf('Unexpected condition with ranges, count %s', $overlappedRanges->count()));
     }
 }

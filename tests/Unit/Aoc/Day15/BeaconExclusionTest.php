@@ -17,6 +17,15 @@ class BeaconExclusionTest extends TestCase
         $this->assertEquals(26, $analyzer->exclusions());
     }
 
+    public function testFindsTuningFrequencyForUndetectedBeaon(): void
+    {
+        $analyzer = new BeaconExclusion(new \ArrayIterator($this->sensorData()));
+
+        $analyzer->loadBeacons();
+
+        $this->assertEquals(56000011, $analyzer->undetectedBeaconTuningFrequency(20));
+    }
+
     private function sensorData(): array
     {
         return [

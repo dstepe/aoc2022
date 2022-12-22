@@ -42,18 +42,35 @@ class BeaconExclusion
             $this->row->checkSensor($sensor);
         });
 
-        print "Completed sensor check\n";
-
         $this->excluded = $this->row->excluded();
-
-        $this->row->ranges()->each(function (Range $range) {
-            printf("Covered range %s\n", $range->label());
-        });
     }
 
     public function exclusions():int
     {
         return $this->excluded;
+    }
+
+    public function undetectedBeaconTuningFrequency(int $upperBound, int $startRow = 0, int $announce = 10000): int
+    {
+        for ($i = $startRow; $i <= $upperBound; $i++) {
+            if ($i % $announce === 0) {
+                printf("Analyzed %s rows\n", $i);
+            }
+
+            $this->analyzeRow($i);
+
+            $uncovered = $this->row->uncoveredInRange(0, $upperBound);
+            if ($uncovered->isEmpty()) {
+                continue;
+            }
+
+            /** @var Point $point */
+            $point = $uncovered->first();
+
+            return $point->tuningFrequency();
+        }
+
+        return 0;
     }
 
     private function findKnownBeacons(): void
