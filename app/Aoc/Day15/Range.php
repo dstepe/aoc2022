@@ -23,9 +23,29 @@ class Range
         return $this->from->y();
     }
 
+    public function from(): Point
+    {
+        return $this->from;
+    }
+
+    public function to(): Point
+    {
+        return $this->to;
+    }
+
+    public function fromX(): int
+    {
+        return $this->from->x();
+    }
+
+    public function toX(): int
+    {
+        return $this->to->x();
+    }
+
     public function span(): int
     {
-        return abs($this->to->x() - $this->from->x()) + 1;
+        return abs($this->to->x() - $this->from->x());
     }
 
     public function contains(Point $point): bool

@@ -45,6 +45,10 @@ class BeaconExclusion
         print "Completed sensor check\n";
 
         $this->excluded = $this->row->excluded();
+
+        $this->row->ranges()->each(function (Range $range) {
+            printf("Covered range %s\n", $range->label());
+        });
     }
 
     public function exclusions():int
