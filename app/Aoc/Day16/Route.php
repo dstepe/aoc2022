@@ -6,22 +6,12 @@ use Illuminate\Support\Collection;
 
 class Route extends Collection
 {
-    public function potentialBenefit(int $fromStep = 0): float
+    public function potentialValue(int $timeRemaining): int
     {
-        if ($this->isEmpty()) {
-            return 0;
-        }
+        /** @var Valve $valve */
+        $valve = $this->last();
 
-        $offset = $this->count() - $fromStep;
-
-        /** @var Valve $last */
-        $last = $this->last();
-
-        if ($offset <= 1) {
-            return $last->flowRate();
-        }
-
-        return $last->flowRate() / ($offset - 1);
+        return $valve->potentialPressure($timeRemaining - $this->count());
     }
 
     public function path(): string

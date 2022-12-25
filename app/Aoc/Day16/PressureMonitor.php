@@ -15,7 +15,7 @@ class PressureMonitor implements TimedEvent
         $this->valves = $valves;
     }
 
-    public function tick(): void
+    public function tick(int $minute, int $remaining): void
     {
         $open = new Collection();
         $increment = $this->valves->reduce(function (int $c, Valve $valve) use ($open) {

@@ -55,4 +55,9 @@ class Valve
     {
         return $this->flowRate * $timeRemaining;
     }
+
+    public function exits(): int
+    {
+        return $this->leadsTo->count();
+    }
 }

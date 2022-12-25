@@ -4,5 +4,5 @@ namespace App\Aoc\Day16;
 
 interface TimedEvent
 {
-    public function tick(): void;
+    public function tick(int $minute, int $remaining): void;
 }

@@ -26,15 +26,10 @@ class Valves extends Collection
         });
     }
 
-    public function priorities(): Collection
+    public function candidateValves(): Collection
     {
-        return $this->reduce(function (Collection $c, Valve $valve) {
-            if ($valve->isClosed()) {
-                $c->add($valve);
-            }
-            return $c;
-        }, new Collection())->sort(function (Valve $a, Valve $b) {
-            return $a->flowRate() <=> $b->flowRate();
+        return $this->filter(function (Valve $valve) {
+            return $valve->flowRate() !== 0 && $valve->isClosed();
         });
     }
 }

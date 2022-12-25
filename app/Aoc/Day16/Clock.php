@@ -22,10 +22,10 @@ class Clock
 
     public function run(): void
     {
-        for ($i = 1; $i <= self::MINUTES; $i++) {
-            print "== Minute $i ==\n";
-            $this->events->each(function (TimedEvent $event) {
-                $event->tick();
+        for ($i = 0; $i < self::MINUTES; $i++) {
+            printf("== Minute %s ==\n", $i + 1);
+            $this->events->each(function (TimedEvent $event) use ($i) {
+                $event->tick($i + 1, self::MINUTES - $i);
             });
             print "\n";
         }
