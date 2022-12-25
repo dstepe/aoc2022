@@ -9,39 +9,82 @@ class Navigator implements TimedEvent
     private Valves $valves;
 
     private Mapper $mapper;
-    private Valve $current;
+    private Valve $currentValve;
+    private Route $currentRoute;
+    private int $stepInCurrentRoute = 1;
 
     public function __construct(Valves $valves)
     {
         $this->valves = $valves;
 
         $this->mapper = new Mapper($this->valves);
-        $this->current = $this->valves->first();
+        $this->currentRoute = new Route();
+        $this->currentValve = $this->valves->get('AA');
     }
 
     public function tick(): void
     {
+        printf(
+            "Current %s benefit %s, route benefit %s\n",
+            $this->currentValve->label(),
+            $this->currentValve->isOpen() ? 0 : $this->currentValve->flowRate(),
+            $this->currentRoute->potentialBenefit()
+        );
+
+        if ($this->shouldOpenValve()) {
+            printf("Let's open %s first\n", $this->currentValve->label());
+            $this->currentValve->open();
+            $this->stepInCurrentRoute++;
+            return;
+        }
+
         try {
-            $move = $this->bestNextMove($this->current);
+            $this->getNextRoute();
         } catch (\Exception $e) {
             printf("Error %s\n", $e->getMessage());
             return;
         }
 
-        printf("Current cost to obtain %s, next cost to obtain %s\n", $this->current->flowRate(), $move->potentialBenefit());
-        if ($this->current->isClosed() && $this->current->flowRate() >= $move->potentialBenefit()) {
-            printf("Let's open %s first\n", $this->current->label());
-            $this->current->open();
+        /** @var Valve $target */
+        $target = $this->currentRoute->last();
+        /** @var Valve $next */
+        $this->currentValve = $this->currentRoute->get($this->stepInCurrentRoute);
+        $this->stepInCurrentRoute++;
+
+        printf(
+            "Let's move toward %s, next is %s along %s\n",
+            $target->label(),
+            $this->currentValve->label(),
+            $this->currentRoute->path()
+        );
+    }
+
+    private function getNextRoute(): void
+    {
+        if ($this->stepInCurrentRoute < $this->currentRoute->count()) {
             return;
         }
 
-        /** @var Valve $target */
-        $target = $move->last();
-        /** @var Valve $next */
-        $next = $move->get(1);
-        printf("Let's move toward %s, next is %s along %s\n", $target->label(), $next->label(), $move->path());
+        $this->currentRoute = $this->bestNextMove($this->currentValve);
+        $this->stepInCurrentRoute = 1;
+    }
 
-        $this->current = $next;
+    private function shouldOpenValve(): bool
+    {
+        if ($this->currentValve->isOpen() || $this->currentValve->flowRate() === 0) {
+            return false;
+        }
+
+        if ($this->stepInCurrentRoute === $this->currentRoute->count()) {
+            return true;
+        }
+
+        // Adjusted for move cost
+        if ($this->currentValve->flowRate() + 1 >= $this->currentRoute->potentialBenefit($this->stepInCurrentRoute)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function bestNextMove(Valve $from): Route
@@ -61,7 +104,12 @@ class Navigator implements TimedEvent
 
                 return $c;
             }, new Collection())->sort(function (Route $a, Route $b) {
-                return $b->potentialBenefit() <=> $a->potentialBenefit();
+                $diff = $b->count() - $a->count();
+                $adjustment = $diff >= 1 ? $diff : 0;
+
+//                printf("Sort %s (%s) against %s (%s + %s)\n", $b->path(), $b->potentialBenefit(), $a->path(), $a->potentialBenefit(), $adjustment);
+
+                return $b->potentialBenefit() <=> $a->potentialBenefit() + $adjustment;
             })->values();
 
         if ($candidates->isEmpty()) {

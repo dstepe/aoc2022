@@ -50,4 +50,9 @@ class Valve
     {
         return !$this->isOpen();
     }
+
+    public function potentialPressure(int $timeRemaining): int
+    {
+        return $this->flowRate * $timeRemaining;
+    }
 }
